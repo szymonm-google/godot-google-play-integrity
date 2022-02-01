@@ -3,3 +3,7 @@
 name="GodotGooglePlayIntegrity"
 binary_type="local"
 binary="GodotGooglePlayIntegrity.1.0.0.release.aar"
+
+[dependencies]
+
+local=["core-integrity-1.10.2.aar"]

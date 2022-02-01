@@ -28,4 +28,8 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation 'androidx.collection:collection:1.1.0'
+    compileOnly fileTree(dir: 'libs', include: ['godot-lib*.aar'])
+    compileOnly fileTree(dir: 'libs', include: ['core-integrity*.aar'])
 }

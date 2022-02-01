@@ -30,5 +30,68 @@
 
 package org.godotengine.godot.plugin.googleplayintegrity;
 
-public class GodotGooglePlayIntegrity {
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.collection.ArraySet;
+
+import com.google.android.play.core.integrity.IntegrityManager;
+import com.google.android.play.core.integrity.IntegrityManagerFactory;
+import com.google.android.play.core.integrity.IntegrityTokenRequest;
+import com.google.android.play.core.integrity.IntegrityTokenResponse;
+import com.google.android.play.core.tasks.Task;
+
+import org.godotengine.godot.Godot;
+import org.godotengine.godot.plugin.GodotPlugin;
+import org.godotengine.godot.plugin.SignalInfo;
+import org.godotengine.godot.plugin.UsedByGodot;
+
+import java.util.Set;
+
+public class GodotGooglePlayIntegrity extends GodotPlugin {
+
+    private final String kLogTag = "godot_pia_demo";
+
+    private IntegrityManager integrityManager;
+
+    public GodotGooglePlayIntegrity(Godot godot) {
+        super(godot);
+
+        integrityManager = IntegrityManagerFactory.create(getActivity());
+    }
+
+    @UsedByGodot
+    public String getString() {
+        return "Google Play Integrity";
+    }
+
+    @UsedByGodot
+    public void requestIntegrityToken(String nonce) {
+        Log.d(kLogTag, "Requesting Play Integrity token. Nonce=" + nonce);
+
+        Task<IntegrityTokenResponse> integrityTokenResponse =
+                integrityManager
+                        .requestIntegrityToken(
+                                IntegrityTokenRequest.builder().setNonce(nonce).build());
+
+        integrityTokenResponse.addOnCompleteListener(command -> {
+            Log.d(kLogTag, "Token: " + command.getResult().token());
+            emitSignal("request_completed", command.getResult().token());
+        });
+    }
+
+    @Override
+    public String getPluginName() {
+        return "GodotGooglePlayIntegrity";
+    }
+
+    @NonNull
+    @Override
+    public Set<SignalInfo> getPluginSignals() {
+        Set<SignalInfo> signals = new ArraySet<>();
+
+        signals.add(new SignalInfo("request_completed", String.class));
+
+        return signals;
+    }
 }
